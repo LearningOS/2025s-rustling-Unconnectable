@@ -38,7 +38,7 @@ pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
                     string.trim().to_string()
                 }
                 Command::Append(n_times_) => {
-                    string.to_string() + &"bar".repeat(*n_times_)
+                    string.to_strbing() + &"bar".repeat(*n_times_)
                 }
             };
             output.push(string_);
@@ -97,4 +97,57 @@ hash_.insert(String::from("Sharon"),999999);
             goals_conceded: team_1_score,
         },
     );
+```
+
+## `Option`
+
+注意这里的 Vec 的成员是`Some(i)`,并且 pop 会返回一个`Option`,因此检查需要 Some(pop)，也就是 Some(Some(i)),内层是检查是是否存在，外层检查时候是`i8`
+
+```rust
+ fn layered_option() {
+        let range = 10;
+        let mut optional_integers: Vec<Option<i8>> = vec![None];
+
+        for i in 1..(range + 1) {
+            optional_integers.push(Some(i));
+        }
+
+        let mut cursor = range;
+
+        // TODO: make this a while let statement - remember that vector.pop also
+        // adds another layer of Option<T>. You can stack `Option<T>`s into
+        // while let and if let.
+        while let Some(Some(integer)) = optional_integers.pop() {
+            assert_eq!(integer, cursor);
+            cursor -= 1;
+        }
+
+        assert_eq!(cursor, 0);
+    }
+```
+
+---
+
+## `Option`和`Result`的转换
+
+### 1. `ok_or`
+
+```rust
+let result = some_value.ok_or("Error: value is None"); // Ok(42)
+
+let none_value: Option<i32> = None;
+let result = none_value.ok_or("Error: value is None"); // Err("Error: value is None")
+```
+2. `ok_or_else`使用闭包传递
+```rust
+let some_value: Option<i32> = Some(42);
+let result = some_value.ok_or_else(|| "Error: value is None".to_string()); // Ok(42)
+
+let none_value: Option<i32> = None;
+let result = none_value.ok_or_else(|| {
+    // 动态生成错误值
+    let error_message = format!("Error: value is None at time {}", chrono::Local::now());
+    error_message
+}); // Err("Error: value is None at time 2023-10-05 12:34:56")
+
 ```
