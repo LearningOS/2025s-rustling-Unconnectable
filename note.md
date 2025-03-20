@@ -151,3 +151,47 @@ let result = none_value.ok_or_else(|| {
 }); // Err("Error: value is None at time 2023-10-05 12:34:56")
 
 ```
+
+Err的写法
+```rust
+//1.
+let qty = item_quantity.parse::<i32>();
+Ok(x * cost_per_item + processing_fee)
+
+//2.
+    let qty = item_quantity.parse::<i32>();
+    match qty{
+        Ok(x) =>{
+            Ok(x * cost_per_item + processing_fee)
+        }
+        Err(E) =>{
+            Err(e)
+        }
+    }
+
+//3.
+    let qty = item_quantity.parse::<i32>();
+    match qty{
+        Ok(x) =>{
+            Ok(x * cost_per_item + processing_fee)
+        }
+        _ =>{
+            Err(qty.unwrap_err())
+        }
+    }
+
+```
+
+一个简单的泛型
+```rust
+
+struct Wrapper <T>{
+    value: T,
+}
+
+impl<T> Wrapper<T> {
+    pub fn new(value: T) -> Self {
+        Wrapper { value }
+    }
+}
+```
