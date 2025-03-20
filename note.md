@@ -138,7 +138,9 @@ let result = some_value.ok_or("Error: value is None"); // Ok(42)
 let none_value: Option<i32> = None;
 let result = none_value.ok_or("Error: value is None"); // Err("Error: value is None")
 ```
+
 2. `ok_or_else`使用闭包传递
+
 ```rust
 let some_value: Option<i32> = Some(42);
 let result = some_value.ok_or_else(|| "Error: value is None".to_string()); // Ok(42)
@@ -152,7 +154,8 @@ let result = none_value.ok_or_else(|| {
 
 ```
 
-Err的写法
+Err 的写法
+
 ```rust
 //1.
 let qty = item_quantity.parse::<i32>();
@@ -183,6 +186,7 @@ Ok(x * cost_per_item + processing_fee)
 ```
 
 一个简单的泛型
+
 ```rust
 
 struct Wrapper <T>{
@@ -195,3 +199,151 @@ impl<T> Wrapper<T> {
     }
 }
 ```
+
+### **`trait`** 的基本语法
+
+```rust
+trait AppendBar {
+    fn append_bar(self) -> Self;
+}
+
+impl AppendBar for String {
+    // TODO: Implement `AppendBar` for type `String`.
+    fn append_bar(mut self) -> Self{
+    //fn append_bar(mut self) -> String{ 这里也可以是String因为类型是String
+        self.push_str("Bar"); //也可以是 self += "Bar";
+        self
+    }
+}
+```
+
+### `trait`对不同的类型实现
+
+```rust
+// 定义 trait
+pub trait trait_name {
+    // 定义一个方法，可以有默认实现
+    fn func_name(&self) -> String {
+        "default implementation".to_string() // 默认实现
+    }
+}
+
+// 定义第一个结构体
+struct struct_name1;
+
+// 为第一个结构体实现 trait
+impl trait_name for struct_name1 {
+    // 可以选择覆盖默认实现
+    fn func_name(&self) -> String {
+        "struct_name1 implementation".to_string() // 覆盖默认实现
+    }
+}
+
+// 定义第二个结构体
+struct struct_name2;
+
+// 为第二个结构体实现 trait
+impl trait_name for struct_name2 {
+    // 使用默认实现
+}
+
+// 测试函数
+fn main() {
+    let instance1 = struct_name1;
+    let instance2 = struct_name2;
+
+    println!("struct_name1: {}", instance1.func_name()); // 输出: struct_name1 implementation
+    println!("struct_name2: {}", instance2.func_name()); // 输出: default implementation
+}
+```
+
+### 当函数需要多种行为，比如`clone,copy,display`，可以传入多个trait约束
+
+```rust
+pub fn notify<T: Summary + Display>(item: T) {
+    println!("Display: {}", item); // 调用 Display 的 fmt 方法
+    println!("Summary: {}", item.summarize()); // 调用 Summary 的 summarize 方法
+}
+
+pub fn process<T: Clone + ToString>(item: T) {
+    let cloned_item = item.clone(); // 调用 Clone 的 clone 方法
+    let string_repr = item.to_string(); // 调用 ToString 的 to_string 方法
+    println!("Cloned: {:?}", cloned_item);
+    println!("String: {}", string_repr);
+}
+```
+
+### 生命周期
+
+看一个实体概念,这里和引用有关系
+
+```rust
+fn longest(x: &str, y: &str) -> &str
+
+let s1 = String::from("short");
+let result;
+{
+    let s2 = String::from("longer");
+    result = longest(&s1, &s2);
+} // s2 在这里被销毁
+println!("{}", result); // result 指向的可能是 s2，但 s2 已无效
+
+```
+
+这里的`s2`被销毁,`result`是悬垂指针,这就是为什么上面那个函数看起来好像没问题但是会编译错误的原因
+
+### 另一个不明显的生命周期的例子
+
+```rust
+fn main() {
+    let name = String::from("Jill Smith");
+    let title = String::from("Fish Flying");
+    let book = Book { author: &name, title: &title };
+    println!("{} by {}", book.title, book.author);
+}
+```
+
+这里的问题是，&name 和 &title 是对局部变量 name 和 title 的引用，而这些引用的生命周期仅限于 main 函数的当前作用域.结构体需要指定生命周期
+
+
+
+
+
+### 字符串的相加
+
+只能是`String`+`&str`，不能是``String+Sting`或者`&str+&str`
+
+具体例子实现字符串相加
+
+`String+&str`
+
+```rust
+let s1 = String::from("Hello, ");
+let s2 = "world!";
+let s3 = s1 + s2; // String + &str
+```
+
+`String+String`
+
+```rust
+let s1 = String::from("Hello, ");
+let s2 = String::from("world!");
+let s3 = s1 + &s2; // String + &str
+let s4 = s1.push_str(&s2); //用push-str
+// &s2会把s2变成&str
+```
+
+`&str+&str`
+
+```rust
+//转换为String然后追加
+let str1: &str = "hello";
+let str2: &str = "world";
+let result = String::from(str1) + str2; // 结果是 String 类型\
+
+//format宏
+let str1: &str = "hello";
+let str2: &str = "world";
+let result = format!("{}{}", str1, str2); // 结果是 "helloworld"
+```
+

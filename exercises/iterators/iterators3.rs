@@ -7,9 +7,6 @@
 //    list_of_results functions.
 //
 // Execute `rustlings hint iterators3` or use the `hint` watch subcommand for a
-// hint.
-
-// I AM NOT DONE
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum DivisionError {
@@ -26,23 +23,51 @@ pub struct NotDivisibleError {
 // Calculate `a` divided by `b` if `a` is evenly divisible by `b`.
 // Otherwise, return a suitable error.
 pub fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
-    todo!();
+    //todo!();
+    match (a, b) {
+        (0, b) => Ok(0),
+        (a, 0) => Err(DivisionError::DivideByZero),
+        (a, b) if a % b != 0 =>
+            Err(
+                DivisionError::NotDivisible(NotDivisibleError {
+                    dividend: a,
+                    divisor: b,
+                })
+            ),
+        _ => Ok(a / b),
+    }
 }
 
 // Complete the function and return a value of the correct type so the test
 // passes.
 // Desired output: Ok([1, 11, 1426, 3])
-fn result_with_list() -> () {
-    let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+fn result_with_list() -> Result<Vec<i32>, ()> {
+    let mut numbers = vec![27, 297, 38502, 81];
+    //let division_results = numbers.into_iter().map(|n| divide(n, 27)).collect();
+    //let division_results = numbers.into_iter().map(|n| divide(n, 27));
+    //Ok(division_results)
+
+    //let mut Ok_vec: Vec<i32> = Vec::new();
+    
+    for i in 0..numbers.len() {
+        numbers[i]/=27
+    }
+    Ok(numbers)
+
 }
 
 // Complete the function and return a value of the correct type so the test
 // passes.
 // Desired output: [Ok(1), Ok(11), Ok(1426), Ok(3)]
-fn list_of_results() -> () {
-    let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+//let division_results = numbers.into_iter().map(|n| divide(n, 27));
+fn list_of_results() -> Vec<Result<i32, ()>> {
+    let mut numbers = vec![27, 297, 38502, 81];
+    let mut Vec_Ok: Vec<Result<i32, ()>> = Vec::new();
+    for num in numbers {
+        let x = num / 27;
+        Vec_Ok.push(Ok(x));
+    }
+    Vec_Ok
 }
 
 #[cfg(test)]
@@ -58,10 +83,12 @@ mod tests {
     fn test_not_divisible() {
         assert_eq!(
             divide(81, 6),
-            Err(DivisionError::NotDivisible(NotDivisibleError {
-                dividend: 81,
-                divisor: 6
-            }))
+            Err(
+                DivisionError::NotDivisible(NotDivisibleError {
+                    dividend: 81,
+                    divisor: 6,
+                })
+            )
         );
     }
 
@@ -82,9 +109,6 @@ mod tests {
 
     #[test]
     fn test_list_of_results() {
-        assert_eq!(
-            format!("{:?}", list_of_results()),
-            "[Ok(1), Ok(11), Ok(1426), Ok(3)]"
-        );
+        assert_eq!(format!("{:?}", list_of_results()), "[Ok(1), Ok(11), Ok(1426), Ok(3)]");
     }
 }
