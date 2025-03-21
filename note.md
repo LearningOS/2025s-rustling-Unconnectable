@@ -347,3 +347,92 @@ let str2: &str = "world";
 let result = format!("{}{}", str1, str2); // 结果是 "helloworld"
 ```
 
+### 如何遍历哈希表和数组
+
+单个哈希表:
+
+```rust
+//使用k_,val_解包key and value
+let hash_it = map.iter();
+let (mut x1, mut x2, mut x3) = (0, 0, 0);
+for (k_, val_) in map.iter() {
+    match val_ {
+        Progress::None => {
+            x1 += 1;
+        }
+        Progress::Some => {
+            x2 += 1;
+        }
+        Progress::Complete => {
+            x3 += 1;
+        }
+    }
+}
+```
+
+遍历一个类型为哈希表的`Vec`
+
+这里是collection是Vec的切片
+
+```rust
+fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
+    // collection is a slice of hashmaps.
+    // collection = [{ "variables1": Complete, "from_str": None, ... },
+    //     { "variables2": Complete, ... }, ... ]
+    //todo!();
+    let (mut x1, mut x2, mut x3) = (0, 0, 0);
+
+    for hash_ in collection.iter() {
+        for (k_, val_) in hash_.iter() {
+            match val_ {
+                Progress::None => {
+                    x1 += 1;
+                }
+                Progress::Some => {
+                    x2 += 1;
+                }
+                Progress::Complete => {
+                    x3 += 1;
+                }
+            }
+        }
+    }
+    match value {
+        Progress::None => { x1 }
+        Progress::Some => { x2 }
+        Progress::Complete => { x3 }
+    }
+}
+```
+
+关于宏`marco`
+
+分隔宏之间需要`;`，是的，这很傻逼。。。
+
+```rust
+// 定义一个带参数的宏
+macro_rules! say_hello {
+    // 匹配无参数的情况
+    () => {
+        println!("Hello, world!");
+    };
+    // 匹配带一个参数的情况
+    ($name:expr) => {
+        println!("Hello, {}!", $name);
+    };
+    // 匹配带两个参数的情况
+    ($greeting:expr, $name:expr) => {
+        println!("{}, {}!", $greeting, $name);
+    };
+}
+
+fn main() {
+    // 使用宏
+    say_hello!(); // 输出: Hello, world!
+    say_hello!("Alice"); // 输出: Hello, Alice!
+    say_hello!("Hi", "Bob"); // 输出: Hi, Bob!
+}
+```
+
+
+

@@ -16,30 +16,29 @@
 //
 // Note: the tests should not be changed
 //
-// Execute `rustlings hint box1` or use the `hint` watch subcommand for a hint.
-
-// I AM NOT DONE
-
+// Execute `rustlings hint box1` or use the `hint` watch subcommand for a
 #[derive(PartialEq, Debug)]
 pub enum List {
-    Cons(i32, List),
+    Cons(i32, Box<List>),
     Nil,
 }
 
 fn main() {
     println!("This is an empty cons list: {:?}", create_empty_list());
-    println!(
-        "This is a non-empty cons list: {:?}",
-        create_non_empty_list()
-    );
+    println!("This is a non-empty cons list: {:?}", create_non_empty_list());
 }
 
+//use crate::List::Cons;
+use crate::List::{ Cons, Nil };
 pub fn create_empty_list() -> List {
-    todo!()
+    //todo!()
+    let list = List::Nil;
+    list
 }
 
 pub fn create_non_empty_list() -> List {
-    todo!()
+    let list = List::Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+    list
 }
 
 #[cfg(test)]
