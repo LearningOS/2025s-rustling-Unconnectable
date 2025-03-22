@@ -556,3 +556,39 @@ unsafe fn raw_pointer_to_box(ptr: *mut Foo) -> Box<Foo> {
     let data = Box::new(Foo { a: 1, b: None });
     let ret = unsafe { raw_pointer_to_box(Box::into_raw(data)) };
 ```
+
+
+## 实现合并两个链表为一个有序链表
+
+前置知识
+```plainttext
+function merge(list_a, list_b):
+    // 创建一个新的链表来存储合并后的结果
+    let merged_list = new LinkedList()
+    
+    // 初始化两个指针，分别指向 list_a 和 list_b 的头节点
+    let current_a = list_a.start
+    let current_b = list_b.start
+    
+    // 当两个链表都有节点时，比较并选择较小的节点加入 merged_list
+    while current_a is not None and current_b is not None:
+        if current_a.val <= current_b.val:
+            merged_list.add(current_a.val)
+            current_a = current_a.next
+        else:
+            merged_list.add(current_b.val)
+            current_b = current_b.next
+    
+    // 如果 list_a 还有剩余节点，将其全部加入 merged_list
+    while current_a is not None:
+        merged_list.add(current_a.val)
+        current_a = current_a.next
+    
+    // 如果 list_b 还有剩余节点，将其全部加入 merged_list
+    while current_b is not None:
+        merged_list.add(current_b.val)
+        current_b = current_b.next
+    
+    // 返回合并后的链表
+    return merged_list
+```
