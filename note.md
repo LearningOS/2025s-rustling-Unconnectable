@@ -16,7 +16,7 @@ match value {
         // 处理 Variant3 的逻辑
     }
     _ => {
-        // 默认情况，处理未匹配的变体
+        // 默认情况,处理未匹配的变体
     }
 }
 
@@ -62,7 +62,7 @@ let mut var_ = HashMap::new();//自动推断类型
 let mut var__ = HashMap::<i32,String>::new();//规定类型
 ```
 
-检查是否有 value,有则跳过，没有就插入
+检查是否有 value,有则跳过,没有就插入
 
 ```rust
 let mut scores = HashMap::new();
@@ -101,7 +101,7 @@ hash_.insert(String::from("Sharon"),999999);
 
 ## `Option`
 
-注意这里的 Vec 的成员是`Some(i)`,并且 pop 会返回一个`Option`,因此检查需要 Some(pop)，也就是 Some(Some(i)),内层是检查是是否存在，外层检查时候是`i8`
+注意这里的 Vec 的成员是`Some(i)`,并且 pop 会返回一个`Option`,因此检查需要 Some(pop),也就是 Some(Some(i)),内层是检查是是否存在,外层检查时候是`i8`
 
 ```rust
  fn layered_option() {
@@ -222,7 +222,7 @@ impl AppendBar for String {
 ```rust
 // 定义 trait
 pub trait trait_name {
-    // 定义一个方法，可以有默认实现
+    // 定义一个方法,可以有默认实现
     fn func_name(&self) -> String {
         "default implementation".to_string() // 默认实现
     }
@@ -257,7 +257,7 @@ fn main() {
 }
 ```
 
-### 当函数需要多种行为，比如`clone,copy,display`，可以传入多个trait约束
+### 当函数需要多种行为,比如`clone,copy,display`,可以传入多个 trait 约束
 
 ```rust
 pub fn notify<T: Summary + Display>(item: T) {
@@ -286,7 +286,7 @@ let result;
     let s2 = String::from("longer");
     result = longest(&s1, &s2);
 } // s2 在这里被销毁
-println!("{}", result); // result 指向的可能是 s2，但 s2 已无效
+println!("{}", result); // result 指向的可能是 s2,但 s2 已无效
 
 ```
 
@@ -303,15 +303,11 @@ fn main() {
 }
 ```
 
-这里的问题是，&name 和 &title 是对局部变量 name 和 title 的引用，而这些引用的生命周期仅限于 main 函数的当前作用域.结构体需要指定生命周期
-
-
-
-
+这里的问题是,&name 和 &title 是对局部变量 name 和 title 的引用,而这些引用的生命周期仅限于 main 函数的当前作用域.结构体需要指定生命周期
 
 ### 字符串的相加
 
-只能是`String`+`&str`，不能是``String+Sting`或者`&str+&str`
+只能是`String`+`&str`,不能是``String+Sting`或者`&str+&str`
 
 具体例子实现字符串相加
 
@@ -372,7 +368,7 @@ for (k_, val_) in map.iter() {
 
 遍历一个类型为哈希表的`Vec`
 
-这里是collection是Vec的切片
+这里是 collection 是 Vec 的切片
 
 ```rust
 fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -407,7 +403,7 @@ fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Pr
 
 关于宏`marco`
 
-分隔宏之间需要`;`，是的，这很傻逼。。。
+分隔宏之间需要`;`,是的,这很傻逼...
 
 ```rust
 // 定义一个带参数的宏
@@ -434,5 +430,129 @@ fn main() {
 }
 ```
 
+## `unsafe`
 
+### 前置知识
 
+- 不可变裸指针:`*const T`
+- 可变裸指针:`*mut T`
+
+```rust
+let x: i32 = 42;
+let ptr_1 = &x as *const i32; // 不可变
+let ptr_2 = &mut x as *mut i32; // 可变
+let ptr_1_num = ptr_1 as usize; //把指针转换为整数表示 也就是0x????????之类的数字
+```
+
+- 裸指针是 Rust 中的不安全抽象,不受 Rust 的所有权和借用规则的保护.
+- 编译器不会检查裸指针的有效性,因此使用裸指针可能导致未定义行为(UB),例如:
+  - 悬垂指针(指向已释放的内存).
+  - 空指针(`null`).
+  - 数据竞争(多个指针同时修改同一块内存).
+- 使用裸指针时,必须手动确保内存安全.
+  rust 默认是 pass by value,
+  如果想要修改函数的参数的值,必须通过创建指向该 value 的指针
+
+- **引用**:
+  - 只能指向有效的、已初始化的内存.
+  - 不可变引用(`&T`)允许多个只读访问.
+  - 可变引用(`&mut T`)允许唯一的可变访问(独占访问).
+  - 引用会自动解引用(通过 Deref trait),因此可以直接访问其指向的值.
+- **裸指针**:
+  - 可以指向任意内存地址,包括无效的、未初始化的或空的内存.
+  - 裸指针没有自动解引用的功能,必须手动解引用(在 `unsafe` 块中).
+  - 裸指针可以绕过 Rust 的借用检查器,因此可以用于实现某些低级操作(如自定义内存管理、与 C 代码交互等).
+
+```rust
+unsafe fn modify_by_address(mut address: usize) {
+    unsafe {
+        //  创建一个指向的 address的raw指针来修改值,如果直接修改,address的值是不会变的
+        //为什么raw指针,因为传入的参数就是裸指针的整数地址
+        let ptr_ = address as *mut u32;
+        *ptr_ = 0xaabbccdd;
+    }
+}
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_success() {
+        let mut t: u32 = 0x12345678;
+        unsafe {
+            modify_by_address(&mut t as *mut u32 as usize);
+        }
+        assert!(t == 0xaabbccdd);
+    }
+}
+```
+
+`modify_by_address(&mut t as *mut u32 as usize);`讲解这里的参数
+
+1. `&mut t `:对 t 的可变引用
+2. `as *mut u32`:引用转换为原始指针,类型为 u32
+3. `as usize`:将原始指针转换为地址的整数表示
+
+同理:`&data.a as *const u128 as usize`
+
+1. `&data.a `:对 `data.a` 的不可变引用
+2. `as *mut u32`:引用转换为原始指针,类型为 `u128`
+3. `as usize`:将原始指针转换为地址的整数表示
+
+### 还有一些和`Box`以及裸指针有关的操作
+
+1. `Box::into_raw(boxed)`:把`Box<T>`类型的数据转换为裸指针
+
+```rust
+//签名
+pub fn into_raw(boxed: Box<T>) -> *mut T
+
+let boxed = Box::new(42); // 创建一个 Box
+let ptr = Box::into_raw(boxed); // 将 Box 转换为裸指针
+
+// 此时,`boxed` 的所有权已经转移给 `ptr`,内存不会被释放.
+```
+
+1. `Box::into_raw(boxed)`:把裸指针的数据转换为`Box<T>`
+
+```rust
+//signature
+pub unsafe fn from_raw(ptr: *mut T) -> Box<T>
+
+let boxed = Box::new(42); // 创建一个 Box
+let ptr = Box::into_raw(boxed); // 将 Box 转换为裸指针
+
+// SAFETY: `ptr` 是通过 `Box::into_raw` 生成的,因此是有效的.
+let boxed_again = unsafe { Box::from_raw(ptr) };
+println!("Value: {}", boxed_again); // 输出: Value: 42
+```
+
+3. `Box::new(value)`:在堆上分配内存，并将值存储在其中。
+
+```rust
+//signature
+pub fn new(value: T) -> Box<T>
+
+let boxed = Box::new(42); // 在堆上分配内存并存储值
+println!("Boxed value: {}", boxed); // 输出: Boxed value: 42
+```
+
+| 函数                   | 功能描述                | 使用场景                       |
+| :--------------------- | :---------------------- | :----------------------------- |
+| `Box::new(value)`      | 在堆上分配内存并存储值  | 创建 `Box`                     |
+| `Box::into_raw(boxed)` | 将 `Box` 转换为裸指针   | 需要直接操作裸指针的场景       |
+| `Box::from_raw(ptr)`   | 将裸指针转换回 `Box`    | 恢复 `Box` 的所有权            |
+| `Box::leak(boxed)`     | 将 `Box` 转换为静态引用 | 需要延长生命周期的场景         |
+| `Box::pin(value)`      | 在堆上分配内存并固定值  | 自引用结构或需要固定内存的场景 |
+
+> 看一个对 box 的处理
+
+```rust
+unsafe fn raw_pointer_to_box(ptr: *mut Foo) -> Box<Foo> {
+        //从一个raw point转为为 Box 类型
+        let mut ret: Box<Foo> = unsafe { Box::from_raw(ptr) };
+        ret.b = Some(String::from("hello"));
+        ret
+    }
+    let data = Box::new(Foo { a: 1, b: None });
+    let ret = unsafe { raw_pointer_to_box(Box::into_raw(data)) };
+```
