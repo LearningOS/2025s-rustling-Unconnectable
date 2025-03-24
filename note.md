@@ -612,3 +612,296 @@ function merge(list_a, list_b):
     }
 
 ```
+
+
+
+### 冒泡排序
+
+```rust
+procedure bubbleSort(A : list of sortable items)
+    n = length(A)
+    for i from 0 to n-1 do
+        for j from 0 to n-i-1 do
+            if A[j] > A[j+1] then
+                swap(A[j], A[j+1])
+            end if
+        end for
+    end for
+end procedure
+
+```
+
+### `BST`二搜索树
+
+1. 节点结构
+```plaintext
+struct Node {
+    value: int           // 节点存储的值
+    left: Node or null    // 左子节点
+    right: Node or null   // 右子节点
+}
+```
+2. 插入操作
+```plaintext
+function insert(root, value):
+    if root is null:
+        return new Node(value)  // 如果树为空，创建一个新节点
+    if value < root.value:
+        root.left = insert(root.left, value)  // 递归插入左子树
+    else if value > root.value:
+        root.right = insert(root.right, value)  // 递归插入右子树
+    return root
+```
+3. 查找操作
+```plaintext
+
+function search(root, value):
+    if root is null or root.value == value:
+        return root  // 找到目标节点或树为空
+    if value < root.value:
+        return search(root.left, value)  // 递归查找左子树
+    else:
+        return search(root.right, value)  // 递归查找右子树
+```
+4. 删除操作
+```plaintext
+function delete(root, value):
+    if root is null:
+        return root  // 树为空，直接返回
+
+    if value < root.value:
+        root.left = delete(root.left, value)  // 递归删除左子树
+    else if value > root.value:
+        root.right = delete(root.right, value)  // 递归删除右子树
+    else:
+        // 找到要删除的节点
+        if root.left is null:
+            return root.right  // 只有右子节点，直接返回右子节点
+        else if root.right is null:
+            return root.left  // 只有左子节点，直接返回左子节点
+        else:
+            // 有两个子节点，找到右子树的最小值节点
+            min_node = find_min(root.right)
+            root.value = min_node.value  // 用最小值节点的值替换当前节点
+            root.right = delete(root.right, min_node.value)  // 删除右子树的最小值节点
+    return root
+
+function find_min(node):
+    while node.left is not null:
+        node = node.left
+    return node
+```
+5. 遍历操作
+中序遍历（左-根-右）
+```plaintext
+function inorder_traversal(root):
+    if root is not null:
+        inorder_traversal(root.left)
+        print(root.value)
+        inorder_traversal(root.right)
+```
+前序遍历（根-左-右）
+```plaintext
+function preorder_traversal(root):
+    if root is not null:
+        print(root.value)
+        preorder_traversal(root.left)
+        preorder_traversal(root.right)
+```
+后序遍历（左-右-根）
+```plaintext
+function postorder_traversal(root):
+    if root is not null:
+        postorder_traversal(root.left)
+        postorder_traversal(root.right)
+        print(root.value)
+```
+
+```rust
+/*
+    binary_search tree
+    This problem requires you to implement a basic interface for a binary tree
+*/
+
+//I AM NOT DONE
+use std::cmp::Ordering;
+use std::fmt::Debug;
+
+#[derive(Debug)]
+struct TreeNode<T>
+where
+    T: Ord,
+{
+    value: T,
+    left: Option<Box<TreeNode<T>>>,
+    right: Option<Box<TreeNode<T>>>,
+}
+
+#[derive(Debug)]
+struct BinarySearchTree<T>
+where
+    T: Ord,
+{
+    root: Option<Box<TreeNode<T>>>,
+}
+
+impl<T> TreeNode<T>
+where
+    T: Ord,
+{
+    fn new(value: T) -> Self {
+        TreeNode {
+            value,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+impl<T> BinarySearchTree<T>
+where
+    T: Ord,
+{
+    fn new() -> Self {
+        BinarySearchTree { root: None }
+    }
+
+    // Insert a value into the BST
+    fn insert(&mut self, value: T) {
+        //TODO
+        if self.root == None {
+            self.root = value;
+        }
+        if value < self.root.value {
+            self.root.left = insert(self.left, value);
+        } else if value > self.root.value {
+            self.root.right = insert(self.right, value);
+        }
+    }
+
+    // Search for a value in the BST
+    fn search(&self, value: T) -> bool {
+        //TODO
+        //查找该元素是否存在
+        if self.root == None {
+            return false;
+        } else if self.root.value == value {
+            return true;
+        }
+        if value < self.root.value {
+            search(self.left, value);
+        } else if value > self.root.value {
+            search(self.right, value);
+        }
+        //true
+    }
+}
+
+impl<T> TreeNode<T>
+where
+    T: Ord,
+{
+    // Insert a node into the tree
+    fn insert(&mut self, value: T) {
+        //TODO
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_insert_and_search() {
+        let mut bst = BinarySearchTree::new();
+
+        assert_eq!(bst.search(1), false);
+
+        bst.insert(5);
+        bst.insert(3);
+        bst.insert(7);
+        bst.insert(2);
+        bst.insert(4);
+
+        assert_eq!(bst.search(5), true);
+        assert_eq!(bst.search(3), true);
+        assert_eq!(bst.search(7), true);
+        assert_eq!(bst.search(2), true);
+        assert_eq!(bst.search(4), true);
+
+        assert_eq!(bst.search(1), false);
+        assert_eq!(bst.search(6), false);
+    }
+
+    #[test]
+    fn test_insert_duplicate() {
+        let mut bst = BinarySearchTree::new();
+
+        bst.insert(1);
+        bst.insert(1);
+
+        assert_eq!(bst.search(1), true);
+
+        match bst.root {
+            Some(ref node) => {
+                assert!(node.left.is_none());
+                assert!(node.right.is_none());
+            }
+            None => panic!("Root should not be None after insertion"),
+        }
+    }
+}
+
+```
+
+
+```rust
+impl<T> BinarySearchTree<T>
+where
+    T: Ord,
+{
+    fn insert(&mut self, value: T) {
+        match &mut self.root {
+            Some(node) => node.insert(value),
+            None => self.root = Some(Box::new(TreeNode::new(value))),
+        }
+    }
+}
+
+impl<T> TreeNode<T>
+where
+    T: Ord,
+{
+    fn insert(&mut self, value: T) {
+        match value.cmp(&self.value) {
+            Ordering::Less => {
+                if let Some(left) = &mut self.left {
+                    left.insert(value);
+                } else {
+                    self.left = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Greater | Ordering::Equal => {
+                if let Some(right) = &mut self.right {
+                    right.insert(value);
+                } else {
+                    self.right = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+        }
+    }
+}
+
+
+fn search(&self, value: T) -> bool {
+        let mut current = &self.root;  // 从根节点开始
+        while let Some(node) = current {
+            match value.cmp(&node.value) {
+                Ordering::Equal => return true,
+                Ordering::Less => current = &node.left,
+                Ordering::Greater => current = &node.right,
+            }
+        }
+        false  // 如果循环结束（current 变为 None），说明没找到
+    }
+```
