@@ -718,6 +718,7 @@ function postorder_traversal(root):
 ```
 
 ### BFS
+
 ```text
 算法 BFS(图 G, 起点 s):
     // 输入: 图 G（可以用邻接表或邻接矩阵表示），起点 s
@@ -740,173 +741,237 @@ function postorder_traversal(root):
 
 
 
-```rust
-struct Stack<T> {
-    size: usize,
-    data: Vec<T>,
-}
-impl<T> Stack<T> {
-    fn new() -> Self {
-        Self {
-            size: 0,
-            data: Vec::new(),
-        }
+### 堆实现
+
+```cpp
+// 堆的存储结构
+class MinHeap {
+    array: List  // 用数组/列表存储堆元素
+    size: int    // 当前堆的大小
+    
+    constructor() {
+        array = new List()
+        size = 0
     }
-    fn is_empty(&self) -> bool {
-        0 == self.size
+    
+    // 获取父节点索引
+    function parent(index) {
+        return floor((index - 1) / 2)
     }
-    fn len(&self) -> usize {
-        self.size
+    
+    // 获取左子节点索引
+    function leftChild(index) {
+        return 2 * index + 1
     }
-    fn clear(&mut self) {
-        self.size = 0;
-        self.data.clear();
-    }
-    fn push(&mut self, val: T) {
-        self.data.push(val);
-        self.size += 1;
-    }
-    fn pop(&mut self) -> Option<T> {
-        // TODO
-        None
-    }
-    fn peek(&self) -> Option<&T> {
-        if 0 == self.size {
-            return None;
-        }
-        self.data.get(self.size - 1)
-    }
-    fn peek_mut(&mut self) -> Option<&mut T> {
-        if 0 == self.size {
-            return None;
-        }
-        self.data.get_mut(self.size - 1)
-    }
-    fn into_iter(self) -> IntoIter<T> {
-        IntoIter(self)
-    }
-    fn iter(&self) -> Iter<T> {
-        let mut iterator = Iter {
-            stack: Vec::new(),
-        };
-        for item in self.data.iter() {
-            iterator.stack.push(item);
-        }
-        iterator
-    }
-    fn iter_mut(&mut self) -> IterMut<T> {
-        let mut iterator = IterMut {
-            stack: Vec::new(),
-        };
-        for item in self.data.iter_mut() {
-            iterator.stack.push(item);
-        }
-        iterator
+    
+    // 获取右子节点索引
+    function rightChild(index) {
+        return 2 * index + 2
     }
 }
-struct IntoIter<T>(Stack<T>);
-impl<T: Clone> Iterator for IntoIter<T> {
-    type Item = T;
-    fn next(&mut self) -> Option<Self::Item> {
-        if !self.0.is_empty() {
-            self.0.size -= 1;
-            self.0.data.pop()
-        } else {
-            None
-        }
+function insert(key) {
+    if size == array.length {
+        array.resize()
+    }
+    
+    array[size] = key  // 将新元素放在末尾
+    size += 1
+    
+    // 上浮调整
+    current = size - 1
+    while current > 0 AND array[current] < array[parent(current)] {
+        swap(array[current], array[parent(current)])
+        current = parent(current)
     }
 }
-struct Iter<'a, T: 'a> {
-    stack: Vec<&'a T>,
+function extractMin() {
+    if size == 0 {
+        return null
+    }
+    
+    min = array[0]  // 根节点是最小值
+    array[0] = array[size - 1]  // 将最后一个元素移到根节点
+    size -= 1
+    
+    // 下沉调整
+    minHeapify(0)
+    
+    return min
 }
-impl<'a, T> Iterator for Iter<'a, T> {
-    type Item = &'a T;
-    fn next(&mut self) -> Option<Self::Item> {
-        self.stack.pop()
+
+function minHeapify(index) {
+    left = leftChild(index)
+    right = rightChild(index)
+    smallest = index
+    
+    if left < size AND array[left] < array[smallest] {
+        smallest = left
+    }
+    
+    if right < size AND array[right] < array[smallest] {
+        smallest = right
+    }
+    
+    if smallest != index {
+        swap(array[index], array[smallest])
+        minHeapify(smallest)
     }
 }
-struct IterMut<'a, T: 'a> {
-    stack: Vec<&'a mut T>,
-}
-impl<'a, T> Iterator for IterMut<'a, T> {
-    type Item = &'a mut T;
-    fn next(&mut self) -> Option<Self::Item> {
-        self.stack.pop()
-    }
-}
-
-fn is_left(c: char) -> bool {
-    matches!(c, '(' | '[' | '{')
-}
-fn is_right(c: char) -> bool {
-	matches!(c, ')' | ']' | '}')
-}
-// 判断左右括号是否匹配
-fn is_match(left: char, right: char) -> bool {
-    matches!((left, right), ('(', ')') | ('[', ']') | ('{', '}'))
-}
-
-fn bracket_match(bracket: &str) -> bool {
-	let mut stack_ = Stack::new();
-	//println!("Processing: {}", bracket);
-
-	for c in bracket.chars() {
-			if is_left(c) {
-					stack_.push(c);
-					//println!("Push '{}', stack: {:?}", c, stack_.data);
-			} else if is_right(c) {
-					if stack_.is_empty() {
-							println!("_!_into R and S is emp{}", c);
-							return false;
-					}
-					if let Some(top) = stack_.pop() {
-							//println!("Pop '{}', match with '{}'", top, c);
-							if !is_match(top, c) {
-									println!("__!!__Mismatch: '{}' and '{}'", top, c);
-									return false;
-							}
-					}
-			}
-	}
-
-	let is_empty = stack_.is_empty();
-	if !is_empty {
-			println!("___!!!___Stack not empty at end: {:?}", stack_.data);
-	}
-	is_empty
-}
-
-以下是测试和报错
-
-#[test]
-    fn bracket_matching_1() {
-        let s = "(2+3){func}[abc]";
-        assert_eq!(bracket_match(s), true);
-    }
-    #[test]
-  
-    fn bracket_matching_3() {
-        let s = "{{([])}}";
-        assert_eq!(bracket_match(s), true);
-    }
-
-failures:
-
----- tests::bracket_matching_1 stdout ----
-___!!!___Stack not empty at end: ['(', '{', '[']
-
-thread 'tests::bracket_matching_1' panicked at exercises/algorithm/algorithm7.rs:150:9:
-assertion `left == right` failed
-  left: false
- right: true
-
----- tests::bracket_matching_3 stdout ----
-___!!!___Stack not empty at end: ['{', '{', '(', '[']
-
-thread 'tests::bracket_matching_3' panicked at exercises/algorithm/algorithm7.rs:160:9:
-assertion `left == right` failed
-  left: false
- right: true
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 ```
+
+
+
+```
+use std::cmp::Ord;
+use std::default::Default;
+
+pub struct Heap<T> where T: Default {
+    count: usize,
+    items: Vec<T>,
+    comparator: fn(&T, &T) -> bool,
+}
+
+impl<T> Heap<T> where T: Default {
+    pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
+        Self {
+            count: 0,
+            items: vec![T::default()],
+            comparator,
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.count
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    pub fn add(&mut self, value: T) {
+        //TODO
+        self.count += 1;
+        self.items.push(value);
+        let mut current = self.count - 1;
+
+        while current > 0 {
+            let parent = self.parent_idx(current);
+            let should_swap = !(self.comparator)(&self.items[parent], &self.items[current]);
+            if should_swap{
+            //if !(self.comparator)(&self.items[parent], &self.items[current]) {
+                //std::mem::swap(&mut self.items[parent], &mut self.items[current]);
+                self.items.swap(parent, current);
+                current = parent;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn parent_idx(&self, idx: usize) -> usize {
+        idx / 2
+    }
+
+    fn children_present(&self, idx: usize) -> bool {
+        self.left_child_idx(idx) <= self.count
+    }
+
+    fn left_child_idx(&self, idx: usize) -> usize {
+        idx * 2
+    }
+
+    fn right_child_idx(&self, idx: usize) -> usize {
+        self.left_child_idx(idx) + 1
+    }
+
+    fn smallest_child_idx(&self, idx: usize) -> usize {
+        //TODO
+        //0
+
+        let left_ = self.left_child_idx(idx);
+        if left_ >= self.count {
+            return idx;
+        }
+        let right_ = self.right_child_idx(idx);
+        if right_ >= self.count {
+            return idx;
+        }
+        //let should_swap = !(self.comparator)(&self.items[parent], &self.items[current]);
+        //if should_swap{
+        if (self.comparator)(&self.items[left_], &self.items[right_]) {
+            return left_; // Left has higher priority
+        } else {
+            return right_; // Right has higher priority
+        }
+    }
+    fn heapify_down(&mut self, idx: usize) {
+        let mut current = idx;
+        loop {
+            let smallest = self.smallest_child_idx(current);
+            if smallest == current || smallest >= self.count {
+                break;
+            }
+            let parent = self.parent_idx(current);
+            if !(self.comparator)(&self.items[current], &self.items[smallest]) {
+                //std::mem::swap(&mut self.items[current], &mut self.items[smallest]);
+                self.items.swap(parent, current);
+                current = smallest;
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+impl<T> Heap<T> where T: Default + Ord {
+    /// Create a new MinHeap
+    pub fn new_min() -> Self {
+        Self::new(|a, b| a < b)
+    }
+
+    /// Create a new MaxHeap
+    pub fn new_max() -> Self {
+        Self::new(|a, b| a > b)
+    }
+}
+
+impl<T> Iterator for Heap<T> where T: Default {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        if self.is_empty() {
+            return None;
+        }
+        // 使用 swap 将顶部元素与最后一个元素交换
+        self.items.swap(0, self.count - 1);
+        // 弹出最后一个元素（原来的顶部元素）
+        let item = self.items.pop().unwrap(); // 安全，因为已检查非空
+        self.count -= 1;
+        if self.count > 0 {
+            self.heapify_down(0);
+        }
+        Some(item)
+    }
+}
+
+pub struct MinHeap;
+
+impl MinHeap {
+    #[allow(clippy::new_ret_no_self)]
+    pub fn new<T>() -> Heap<T> where T: Default + Ord {
+        Heap::new(|a, b| a < b)
+    }
+}
+
+pub struct MaxHeap;
+
+impl MaxHeap {
+    #[allow(clippy::new_ret_no_self)]
+    pub fn new<T>() -> Heap<T> where T: Default + Ord {
+        Heap::new(|a, b| a > b)
+    }
+}
+```
+
+
 

@@ -1,85 +1,82 @@
-struct Stack<T> {
-    size: usize,
-    data: Vec<T>,
-}
+use std::collections::{HashMap, HashSet};
+use std::fmt;
 
-impl<T> Stack<T> {
-    fn new() -> Self {
-        Self {
-            size: 0,
-            data: Vec::new(),
-        }
-    }
-    fn is_empty(&self) -> bool {
-        0 == self.size
-    }
-    fn push(&mut self, val: T) {
-        self.data.push(val);
-        self.size += 1;
-    }
-    fn pop(&mut self) -> Option<T> {
-        if self.is_empty() {
-            None
-        } else {
-            self.size -= 1;
-            self.data.pop()
-        }
+// 定义一个错误类型：节点不在图中
+#[derive(Debug, Clone)]
+pub struct NodeNotInGraph;
+
+impl fmt::Display for NodeNotInGraph {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "尝试访问图中不存在的节点")
     }
 }
 
-fn is_left(c: char) -> bool {
-    matches!(c, '(' | '[' | '{')
+// 无向图结构体
+pub struct UndirectedGraph {
+    adjacency_table: HashMap<String, Vec<(String, i32)>>, // 邻接表：节点 -> [(邻居节点, 边权重)]
 }
 
-fn is_right(c: char) -> bool {
-    matches!(c, ')' | ']' | '}')
-}
+// 图的 trait
+pub trait Graph {
+    // 创建一个新图
+    fn new() -> Self;
 
-fn is_match(left: char, right: char) -> bool {
-    matches!((left, right), ('(', ')') | ('[', ']') | ('{', '}'))
-}
+    // 获取邻接表的可变引用
+    fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
 
-fn bracket_match(bracket: &str) -> bool {
-    if bracket.len() % 2 != 0 { // 可选优化：长度检查
-        return false;
+    // 获取邻接表的不可变引用
+    fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
+
+    // 添加一个节点
+    fn add_node(&mut self, node: &str) -> bool {
+        // 待实现
+        true
     }
 
-    let mut stack_ = Stack::new();
+    // 添加一条边
+    fn add_edge(&mut self, edge: (&str, &str, i32)) {
+        // 待实现
+    }
 
-    for c in bracket.chars() {
-        if is_left(c) { // 左括号：压入栈
-            stack_.push(c);
-        } else if is_right(c) { // 右括号：检查匹配
-            if stack_.is_empty() { // 栈为空，无左括号匹配
-                return false;
-            }
-            if let Some(top) = stack_.pop() { // 弹出栈顶
-                if !is_match(top, c) { // 检查是否匹配
-                    return false;
-                }
+    // 检查图中是否包含某个节点
+    fn contains(&self, node: &str) -> bool {
+        self.adjacency_table().get(node).is_some()
+    }
+
+    // 获取所有节点的集合
+    fn nodes(&self) -> HashSet<&String> {
+        self.adjacency_table().keys().collect()
+    }
+
+    // 获取所有边的列表
+    fn edges(&self) -> Vec<(&String, &String, i32)> {
+        let mut edges = Vec::new();
+        for (from_node, from_node_neighbours) in self.adjacency_table() {
+            for (to_node, weight) in from_node_neighbours {
+                edges.push((from_node, to_node, *weight));
             }
         }
-        // 非括号字符（如数字、字母）直接忽略
+        edges
+    }
+}
+
+// 为 UndirectedGraph 实现 Graph trait
+impl Graph for UndirectedGraph {
+    fn new() -> UndirectedGraph {
+        UndirectedGraph {
+            adjacency_table: HashMap::new(),
+        }
     }
 
-    stack_.is_empty() // 栈为空表示所有括号匹配成功
-}
+    fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>> {
+        &mut self.adjacency_table
+    }
 
-#[test]
-fn bracket_matching_1() {
-    let s = "(2+3){func}[abc]";
-    assert_eq!(bracket_match(s), true);
-}
+    fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
+        &self.adjacency_table
+    }
 
-#[test]
-fn bracket_matching_3() {
-    let s = "{{([])}}";
-    assert_eq!(bracket_match(s), true);
-}
-
-fn main() {
-    let s1 = "(2+3){func}[abc]";
-    let s3 = "{{([])}}";
-    println!("{}: {}", s1, bracket_match(s1)); // true
-    println!("{}: {}", s3, bracket_match(s3)); // true
+    fn add_edge(&mut self, edge: (&str, &str, i32)) {
+        // 待实现
+    }
 }
