@@ -8,7 +8,7 @@
 match value {
     EnumName::Variant1(type1_param1, type1_param2, ...) => {
         // 处理 Variant1 的逻辑
-    }
+    }****
     EnumName::Variant2(type2_param) => {
         // 处理 Variant2 的逻辑
     }
@@ -717,191 +717,196 @@ function postorder_traversal(root):
         print(root.value)
 ```
 
+### BFS
+```text
+算法 BFS(图 G, 起点 s):
+    // 输入: 图 G（可以用邻接表或邻接矩阵表示），起点 s
+    // 输出: 遍历所有可达节点（或根据需求返回特定结果，如最短路径）
+
+    1. 创建一个空队列 Q
+    2. 创建一个集合 visited 用于记录已访问的节点
+    3. 将起点 s 加入队列 Q
+    4. 将起点 s 标记为已访问（加入 visited）
+
+    5. 当队列 Q 不为空时，重复以下步骤：
+        a. 从队列 Q 的头部取出一个节点 u（出队）
+        b. 处理节点 u（例如打印、记录等）
+        c. 对于 u 的每个未访问的邻接节点 v：
+            i. 将 v 标记为已访问（加入 visited）
+            ii. 将 v 加入队列 Q（入队）
+
+    6. 结束
+```
+
+
+
 ```rust
-/*
-    binary_search tree
-    This problem requires you to implement a basic interface for a binary tree
-*/
-
-//I AM NOT DONE
-use std::cmp::Ordering;
-use std::fmt::Debug;
-
-#[derive(Debug)]
-struct TreeNode<T>
-where
-    T: Ord,
-{
-    value: T,
-    left: Option<Box<TreeNode<T>>>,
-    right: Option<Box<TreeNode<T>>>,
+struct Stack<T> {
+    size: usize,
+    data: Vec<T>,
 }
-
-#[derive(Debug)]
-struct BinarySearchTree<T>
-where
-    T: Ord,
-{
-    root: Option<Box<TreeNode<T>>>,
-}
-
-impl<T> TreeNode<T>
-where
-    T: Ord,
-{
-    fn new(value: T) -> Self {
-        TreeNode {
-            value,
-            left: None,
-            right: None,
-        }
-    }
-}
-
-impl<T> BinarySearchTree<T>
-where
-    T: Ord,
-{
+impl<T> Stack<T> {
     fn new() -> Self {
-        BinarySearchTree { root: None }
-    }
-
-    // Insert a value into the BST
-    fn insert(&mut self, value: T) {
-        //TODO
-        if self.root == None {
-            self.root = value;
-        }
-        if value < self.root.value {
-            self.root.left = insert(self.left, value);
-        } else if value > self.root.value {
-            self.root.right = insert(self.right, value);
+        Self {
+            size: 0,
+            data: Vec::new(),
         }
     }
-
-    // Search for a value in the BST
-    fn search(&self, value: T) -> bool {
-        //TODO
-        //查找该元素是否存在
-        if self.root == None {
-            return false;
-        } else if self.root.value == value {
-            return true;
+    fn is_empty(&self) -> bool {
+        0 == self.size
+    }
+    fn len(&self) -> usize {
+        self.size
+    }
+    fn clear(&mut self) {
+        self.size = 0;
+        self.data.clear();
+    }
+    fn push(&mut self, val: T) {
+        self.data.push(val);
+        self.size += 1;
+    }
+    fn pop(&mut self) -> Option<T> {
+        // TODO
+        None
+    }
+    fn peek(&self) -> Option<&T> {
+        if 0 == self.size {
+            return None;
         }
-        if value < self.root.value {
-            search(self.left, value);
-        } else if value > self.root.value {
-            search(self.right, value);
+        self.data.get(self.size - 1)
+    }
+    fn peek_mut(&mut self) -> Option<&mut T> {
+        if 0 == self.size {
+            return None;
         }
-        //true
+        self.data.get_mut(self.size - 1)
+    }
+    fn into_iter(self) -> IntoIter<T> {
+        IntoIter(self)
+    }
+    fn iter(&self) -> Iter<T> {
+        let mut iterator = Iter {
+            stack: Vec::new(),
+        };
+        for item in self.data.iter() {
+            iterator.stack.push(item);
+        }
+        iterator
+    }
+    fn iter_mut(&mut self) -> IterMut<T> {
+        let mut iterator = IterMut {
+            stack: Vec::new(),
+        };
+        for item in self.data.iter_mut() {
+            iterator.stack.push(item);
+        }
+        iterator
+    }
+}
+struct IntoIter<T>(Stack<T>);
+impl<T: Clone> Iterator for IntoIter<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        if !self.0.is_empty() {
+            self.0.size -= 1;
+            self.0.data.pop()
+        } else {
+            None
+        }
+    }
+}
+struct Iter<'a, T: 'a> {
+    stack: Vec<&'a T>,
+}
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.stack.pop()
+    }
+}
+struct IterMut<'a, T: 'a> {
+    stack: Vec<&'a mut T>,
+}
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.stack.pop()
     }
 }
 
-impl<T> TreeNode<T>
-where
-    T: Ord,
-{
-    // Insert a node into the tree
-    fn insert(&mut self, value: T) {
-        //TODO
-    }
+fn is_left(c: char) -> bool {
+    matches!(c, '(' | '[' | '{')
+}
+fn is_right(c: char) -> bool {
+	matches!(c, ')' | ']' | '}')
+}
+// 判断左右括号是否匹配
+fn is_match(left: char, right: char) -> bool {
+    matches!((left, right), ('(', ')') | ('[', ']') | ('{', '}'))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+fn bracket_match(bracket: &str) -> bool {
+	let mut stack_ = Stack::new();
+	//println!("Processing: {}", bracket);
 
+	for c in bracket.chars() {
+			if is_left(c) {
+					stack_.push(c);
+					//println!("Push '{}', stack: {:?}", c, stack_.data);
+			} else if is_right(c) {
+					if stack_.is_empty() {
+							println!("_!_into R and S is emp{}", c);
+							return false;
+					}
+					if let Some(top) = stack_.pop() {
+							//println!("Pop '{}', match with '{}'", top, c);
+							if !is_match(top, c) {
+									println!("__!!__Mismatch: '{}' and '{}'", top, c);
+									return false;
+							}
+					}
+			}
+	}
+
+	let is_empty = stack_.is_empty();
+	if !is_empty {
+			println!("___!!!___Stack not empty at end: {:?}", stack_.data);
+	}
+	is_empty
+}
+
+以下是测试和报错
+
+#[test]
+    fn bracket_matching_1() {
+        let s = "(2+3){func}[abc]";
+        assert_eq!(bracket_match(s), true);
+    }
     #[test]
-    fn test_insert_and_search() {
-        let mut bst = BinarySearchTree::new();
-
-        assert_eq!(bst.search(1), false);
-
-        bst.insert(5);
-        bst.insert(3);
-        bst.insert(7);
-        bst.insert(2);
-        bst.insert(4);
-
-        assert_eq!(bst.search(5), true);
-        assert_eq!(bst.search(3), true);
-        assert_eq!(bst.search(7), true);
-        assert_eq!(bst.search(2), true);
-        assert_eq!(bst.search(4), true);
-
-        assert_eq!(bst.search(1), false);
-        assert_eq!(bst.search(6), false);
+  
+    fn bracket_matching_3() {
+        let s = "{{([])}}";
+        assert_eq!(bracket_match(s), true);
     }
 
-    #[test]
-    fn test_insert_duplicate() {
-        let mut bst = BinarySearchTree::new();
+failures:
 
-        bst.insert(1);
-        bst.insert(1);
+---- tests::bracket_matching_1 stdout ----
+___!!!___Stack not empty at end: ['(', '{', '[']
 
-        assert_eq!(bst.search(1), true);
+thread 'tests::bracket_matching_1' panicked at exercises/algorithm/algorithm7.rs:150:9:
+assertion `left == right` failed
+  left: false
+ right: true
 
-        match bst.root {
-            Some(ref node) => {
-                assert!(node.left.is_none());
-                assert!(node.right.is_none());
-            }
-            None => panic!("Root should not be None after insertion"),
-        }
-    }
-}
+---- tests::bracket_matching_3 stdout ----
+___!!!___Stack not empty at end: ['{', '{', '(', '[']
 
+thread 'tests::bracket_matching_3' panicked at exercises/algorithm/algorithm7.rs:160:9:
+assertion `left == right` failed
+  left: false
+ right: true
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 ```
 
-
-```rust
-impl<T> BinarySearchTree<T>
-where
-    T: Ord,
-{
-    fn insert(&mut self, value: T) {
-        match &mut self.root {
-            Some(node) => node.insert(value),
-            None => self.root = Some(Box::new(TreeNode::new(value))),
-        }
-    }
-}
-
-impl<T> TreeNode<T>
-where
-    T: Ord,
-{
-    fn insert(&mut self, value: T) {
-        match value.cmp(&self.value) {
-            Ordering::Less => {
-                if let Some(left) = &mut self.left {
-                    left.insert(value);
-                } else {
-                    self.left = Some(Box::new(TreeNode::new(value)));
-                }
-            }
-            Ordering::Greater | Ordering::Equal => {
-                if let Some(right) = &mut self.right {
-                    right.insert(value);
-                } else {
-                    self.right = Some(Box::new(TreeNode::new(value)));
-                }
-            }
-        }
-    }
-}
-
-
-fn search(&self, value: T) -> bool {
-        let mut current = &self.root;  // 从根节点开始
-        while let Some(node) = current {
-            match value.cmp(&node.value) {
-                Ordering::Equal => return true,
-                Ordering::Less => current = &node.left,
-                Ordering::Greater => current = &node.right,
-            }
-        }
-        false  // 如果循环结束（current 变为 None），说明没找到
-    }
-```
