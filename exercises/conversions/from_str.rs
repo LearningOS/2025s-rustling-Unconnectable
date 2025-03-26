@@ -152,21 +152,21 @@ mod tests {
 
 // from_str.rs
 //
-// 这与 from_into.rs 类似，但这次我们将实现 `FromStr` 特性并返回错误，而不是回退到默认值。
-// 此外，实现了 FromStr 后，你可以在字符串上使用 `parse` 方法来生成实现该特性的类型对象。
-// 你可以在 https://doc.rust-lang.org/std/str/trait.FromStr.html 阅读更多相关内容。
+// 这与 from_into.rs 类似,但这次我们将实现 `FromStr` 特性并返回错误,而不是回退到默认值.
+// 此外,实现了 FromStr 后,你可以在字符串上使用 `parse` 方法来生成实现该特性的类型对象.
+// 你可以在 https://doc.rust-lang.org/std/str/trait.FromStr.html 阅读更多相关内容.
 //
-// 执行 `rustlings hint from_str` 或使用 `hint` watch 子命令获取提示。
+// 执行 `rustlings hint from_str` 或使用 `hint` watch 子命令获取提示.
 // 我还没有完成
 
 // 步骤：
-// 1. 如果提供的字符串长度为 0，应返回一个错误
+// 1. 如果提供的字符串长度为 0,应返回一个错误
 // 2. 将给定的字符串按逗号分隔
-// 3. 分隔后应只返回 2 个元素，否则返回一个错误
+// 3. 分隔后应只返回 2 个元素,否则返回一个错误
 // 4. 从分隔结果中提取第一个元素作为姓名
-// 5. 从分隔结果中提取另一个元素，并将其解析为 `usize` 作为年龄，例如使用 `"4".parse::<usize>()`
-// 6. 如果在提取姓名和年龄时出现问题，应返回一个错误
-// 如果一切顺利，则返回一个 Person 对象的 Result
+// 5. 从分隔结果中提取另一个元素,并将其解析为 `usize` 作为年龄,例如使用 `"4".parse::<usize>()`
+// 6. 如果在提取姓名和年龄时出现问题,应返回一个错误
+// 如果一切顺利,则返回一个 Person 对象的 Result
 //
-// 附注：`Box<dyn Error>` 实现了 `From<&'_ str>`。这意味着如果你想返回一个字符串错误消息，
-// 可以通过简单地使用 `return Err("我的错误消息".into())` 来实现。
+// 附注：`Box<dyn Error>` 实现了 `From<&'_ str>`.这意味着如果你想返回一个字符串错误消息,
+// 可以通过简单地使用 `return Err("我的错误消息".into())` 来实现.

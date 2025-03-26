@@ -526,7 +526,7 @@ let boxed_again = unsafe { Box::from_raw(ptr) };
 println!("Value: {}", boxed_again); // 输出: Value: 42
 ```
 
-3. `Box::new(value)`:在堆上分配内存，并将值存储在其中。
+3. `Box::new(value)`:在堆上分配内存,并将值存储在其中.
 
 ```rust
 //signature
@@ -570,11 +570,11 @@ function merge(list_a, list_b):
     // 创建一个新的链表来存储合并后的结果
     let merged_list = new LinkedList()
 
-    // 初始化两个指针，分别指向 list_a 和 list_b 的头节点
+    // 初始化两个指针,分别指向 list_a 和 list_b 的头节点
     let current_a = list_a.start
     let current_b = list_b.start
 
-    // 当两个链表都有节点时，比较并选择较小的节点加入 merged_list
+    // 当两个链表都有节点时,比较并选择较小的节点加入 merged_list
     while current_a is not None and current_b is not None:
         if current_a.val <= current_b.val:
             merged_list.add(current_a.val)
@@ -583,12 +583,12 @@ function merge(list_a, list_b):
             merged_list.add(current_b.val)
             current_b = current_b.next
 
-    // 如果 list_a 还有剩余节点，将其全部加入 merged_list
+    // 如果 list_a 还有剩余节点,将其全部加入 merged_list
     while current_a is not None:
         merged_list.add(current_a.val)
         current_a = current_a.next
 
-    // 如果 list_b 还有剩余节点，将其全部加入 merged_list
+    // 如果 list_b 还有剩余节点,将其全部加入 merged_list
     while current_b is not None:
         merged_list.add(current_b.val)
         current_b = current_b.next
@@ -645,7 +645,7 @@ struct Node {
 ```plaintext
 function insert(root, value):
     if root is null:
-        return new Node(value)  // 如果树为空，创建一个新节点
+        return new Node(value)  // 如果树为空,创建一个新节点
     if value < root.value:
         root.left = insert(root.left, value)  // 递归插入左子树
     else if value > root.value:
@@ -667,7 +667,7 @@ function search(root, value):
 ```plaintext
 function delete(root, value):
     if root is null:
-        return root  // 树为空，直接返回
+        return root  // 树为空,直接返回
 
     if value < root.value:
         root.left = delete(root.left, value)  // 递归删除左子树
@@ -676,11 +676,11 @@ function delete(root, value):
     else:
         // 找到要删除的节点
         if root.left is null:
-            return root.right  // 只有右子节点，直接返回右子节点
+            return root.right  // 只有右子节点,直接返回右子节点
         else if root.right is null:
-            return root.left  // 只有左子节点，直接返回左子节点
+            return root.left  // 只有左子节点,直接返回左子节点
         else:
-            // 有两个子节点，找到右子树的最小值节点
+            // 有两个子节点,找到右子树的最小值节点
             min_node = find_min(root.right)
             root.value = min_node.value  // 用最小值节点的值替换当前节点
             root.right = delete(root.right, min_node.value)  // 删除右子树的最小值节点
@@ -692,7 +692,7 @@ function find_min(node):
     return node
 ```
 5. 遍历操作
-中序遍历（左-根-右）
+中序遍历(左-根-右)
 ```plaintext
 function inorder_traversal(root):
     if root is not null:
@@ -700,7 +700,7 @@ function inorder_traversal(root):
         print(root.value)
         inorder_traversal(root.right)
 ```
-前序遍历（根-左-右）
+前序遍历(根-左-右)
 ```plaintext
 function preorder_traversal(root):
     if root is not null:
@@ -708,7 +708,7 @@ function preorder_traversal(root):
         preorder_traversal(root.left)
         preorder_traversal(root.right)
 ```
-后序遍历（左-右-根）
+后序遍历(左-右-根)
 ```plaintext
 function postorder_traversal(root):
     if root is not null:
@@ -721,20 +721,20 @@ function postorder_traversal(root):
 
 ```text
 算法 BFS(图 G, 起点 s):
-    // 输入: 图 G（可以用邻接表或邻接矩阵表示），起点 s
-    // 输出: 遍历所有可达节点（或根据需求返回特定结果，如最短路径）
+    // 输入: 图 G(可以用邻接表或邻接矩阵表示),起点 s
+    // 输出: 遍历所有可达节点(或根据需求返回特定结果,如最短路径)
 
     1. 创建一个空队列 Q
     2. 创建一个集合 visited 用于记录已访问的节点
     3. 将起点 s 加入队列 Q
-    4. 将起点 s 标记为已访问（加入 visited）
+    4. 将起点 s 标记为已访问(加入 visited)
 
-    5. 当队列 Q 不为空时，重复以下步骤：
-        a. 从队列 Q 的头部取出一个节点 u（出队）
-        b. 处理节点 u（例如打印、记录等）
+    5. 当队列 Q 不为空时,重复以下步骤：
+        a. 从队列 Q 的头部取出一个节点 u(出队)
+        b. 处理节点 u(例如打印、记录等)
         c. 对于 u 的每个未访问的邻接节点 v：
-            i. 将 v 标记为已访问（加入 visited）
-            ii. 将 v 加入队列 Q（入队）
+            i. 将 v 标记为已访问(加入 visited)
+            ii. 将 v 加入队列 Q(入队)
 
     6. 结束
 ```
@@ -944,8 +944,8 @@ impl<T> Iterator for Heap<T> where T: Default {
         }
         // 使用 swap 将顶部元素与最后一个元素交换
         self.items.swap(0, self.count - 1);
-        // 弹出最后一个元素（原来的顶部元素）
-        let item = self.items.pop().unwrap(); // 安全，因为已检查非空
+        // 弹出最后一个元素(原来的顶部元素)
+        let item = self.items.pop().unwrap(); // 安全,因为已检查非空
         self.count -= 1;
         if self.count > 0 {
             self.heapify_down(0);

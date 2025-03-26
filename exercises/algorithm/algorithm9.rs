@@ -124,8 +124,8 @@ impl<T> Iterator for Heap<T> where T: Default {
         }
         // 使用 swap 将顶部元素与最后一个元素交换
         self.items.swap(1, self.count);
-        // 弹出最后一个元素（原来的顶部元素）
-        let item = self.items.pop().unwrap(); // 安全，因为已检查非空
+        // 弹出最后一个元素(原来的顶部元素)
+        let item = self.items.pop().unwrap(); // 安全,因为已检查非空
         self.count -= 1;
         if self.count > 0 {
             self.heapify_down(1);
